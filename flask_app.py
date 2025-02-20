@@ -79,20 +79,20 @@ def index():
     <p>To read the current boolean value, visit the read UUID endpoint:</p>
     <pre>GET {BASE_URL}/read/{read_uuid}</pre>
     <p>The response will be a JSON object like this:</p>
-    <pre>{{{{ "bit": true }}}}</pre>
+    <pre>{{ '{{' }} \"bit\": true {{ '}}' }}</pre>
 
     <h3>Expiration</h3>
     <p>UUID pairs automatically expire after {EXPIRATION_DAYS} days of inactivity. Each write refreshes the expiration timer.</p>
 
     <h3>Error Handling</h3>
     <p>If an invalid UUID is used, the system returns a 404 error with a JSON message:</p>
-    <pre>{{{{ "error": "Invalid UUID" }}}}</pre>
+    <pre>{{ '{{' }} \"error\": \"Invalid UUID\" {{ '}}' }}</pre>
 
     <h3>Example Usage with Curl</h3>
     <p>Write (set to true):</p>
-    <pre>curl "{BASE_URL}/write/{write_uuid}?bit=true"</pre>
+    <pre>curl \"{BASE_URL}/write/{write_uuid}?bit=true\"</pre>
     <p>Read current value:</p>
-    <pre>curl "{BASE_URL}/read/{read_uuid}"</pre>
+    <pre>curl \"{BASE_URL}/read/{read_uuid}\"</pre>
 
     <h3>Database info</h3>
     <p>Each UUID is random, so there is nothing tying them to anything meaningful. This lets us open the database. You can find the content of the database at the link below:</p>
