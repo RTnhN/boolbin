@@ -1,11 +1,13 @@
-import sqlite3
 import uuid
 import time
+import sqlite3
 from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+
+
 EXPIRATION_DAYS = 30  # Change this value to adjust expiration time
 EXPIRATION_SECONDS = EXPIRATION_DAYS * 24 * 60 * 60
 
@@ -20,7 +22,8 @@ else:
 def init_db():
     with sqlite3.connect("bool_db.db") as conn:
         c = conn.cursor()
-        c.execute("""
+        c.execute(
+            """
         CREATE TABLE IF NOT EXISTS bool_store (
             write_uuid TEXT PRIMARY KEY,
             read_uuid TEXT UNIQUE NOT NULL,
@@ -31,27 +34,32 @@ def init_db():
         )
         conn.commit()
 
+
 # Cleanup expired entries
 def cleanup_expired():
     current_time = int(time.time())
     with sqlite3.connect("bool_db.db") as conn:
         c = conn.cursor()
-        c.execute("DELETE FROM bool_store WHERE ? - created_at > ?", (current_time, EXPIRATION_SECONDS))
+        c.execute(
+            "DELETE FROM bool_store WHERE ? - created_at > ?",
+            (current_time, EXPIRATION_SECONDS),
+        )
         conn.commit()
+
 
 # Base route: Generate new UUIDs and show them
 @app.route("/")
 def index():
     cleanup_expired()
-
     write_uuid = str(uuid.uuid4())
     read_uuid = str(uuid.uuid4())
     created_at = int(time.time())
-
     with sqlite3.connect("bool_db.db") as conn:
         c = conn.cursor()
-        c.execute("INSERT INTO bool_store (write_uuid, read_uuid, bit, created_at) VALUES (?, ?, ?, ?)",
-                  (write_uuid, read_uuid, 0, created_at))
+        c.execute(
+            "INSERT INTO bool_store (write_uuid, read_uuid, bit, created_at) VALUES (?, ?, ?, ?)",
+            (write_uuid, read_uuid, 0, created_at),
+        )
         conn.commit()
     return render_template_string(
         f"""
@@ -94,14 +102,17 @@ def index():
     """
     )
 
+
 # Write route: Update the bit value or show the read UUID
-@app.route("/write/<write_uuid>", methods=['GET'])
+@app.route("/write/<write_uuid>", methods=["GET"])
 def write_bit(write_uuid):
     bit = request.args.get("bit")
 
     with sqlite3.connect("bool_db.db") as conn:
         c = conn.cursor()
-        c.execute("SELECT read_uuid FROM bool_store WHERE write_uuid = ?", (write_uuid,))
+        c.execute(
+            "SELECT read_uuid FROM bool_store WHERE write_uuid = ?", (write_uuid,)
+        )
         row = c.fetchone()
         if not row:
             return jsonify({"error": "Invalid write UUID"}), 404
@@ -110,15 +121,24 @@ def write_bit(write_uuid):
 
         if bit is not None:
             bit_value = 1 if bit.lower() == "true" else 0
-            c.execute("UPDATE bool_store SET bit = ?, created_at = ? WHERE write_uuid = ?",
-                      (bit_value, int(time.time()), write_uuid))
+            c.execute(
+                "UPDATE bool_store SET bit = ?, created_at = ? WHERE write_uuid = ?",
+                (bit_value, int(time.time()), write_uuid),
+            )
             conn.commit()
-            return jsonify({"message": "Bit updated", "bit": bool(bit_value), "read_uuid": read_uuid})
+            return jsonify(
+                {
+                    "message": "Bit updated",
+                    "bit": bool(bit_value),
+                    "read_uuid": read_uuid,
+                }
+            )
 
         return jsonify({"write_uuid": write_uuid, "read_uuid": read_uuid})
 
+
 # Read route: Get the current boolean value
-@app.route("/read/<read_uuid>", methods=['GET'])
+@app.route("/read/<read_uuid>", methods=["GET"])
 def read_bit(read_uuid):
     with sqlite3.connect("bool_db.db") as conn:
         c = conn.cursor()
@@ -131,7 +151,8 @@ def read_bit(read_uuid):
         return jsonify({"bit": bit_value})
 
 
-@app.route("/all", methods=['GET'])
+# Route to display all entries
+@app.route("/all", methods=["GET"])
 def all_entries():
     with sqlite3.connect("bool_db.db") as conn:
         c = conn.cursor()
@@ -154,6 +175,8 @@ def all_entries():
 
     return table_html
 
+
 init_db()
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
