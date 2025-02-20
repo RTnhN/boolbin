@@ -62,44 +62,48 @@ def index():
         )
         conn.commit()
     return render_template_string(
-        f"""
-    <h1>UUIDs Generated</h1>
-    <p><strong>Write/Read UUID:</strong> <a href="/{write_uuid}">{write_uuid}</a></p>
-    <p><strong>Read UUID:</strong> <a href="/{read_uuid}">{read_uuid}</a></p>
+        """
+        <h1>UUIDs Generated</h1>
+        <p><strong>Write/Read UUID:</strong> <a href="/{{ write_uuid }}">{{ write_uuid }}</a></p>
+        <p><strong>Read UUID:</strong> <a href="/{{ read_uuid }}">{{ read_uuid }}</a></p>
 
-    <h2>How to Use This Database</h2>
-    <p>This simple boolean database works with UUID-based endpoints for reading and writing values.</p>
+        <h2>How to Use This Database</h2>
+        <p>This simple boolean database works with UUID-based endpoints for reading and writing values.</p>
 
-    <h3>Write Operation</h3>
-    <p>To update the boolean value, make a GET request with the write UUID and the <code>bit</code> query parameter:</p>
-    <pre>GET {BASE_URL}/write/{write_uuid}?bit=true</pre>
-    <p>This will update the value to <strong>true</strong>. Similarly, you can use <code>bit=false</code> to set it to <strong>false</strong>.</p>
+        <h3>Write Operation</h3>
+        <p>To update the boolean value, make a GET request with the write UUID and the <code>bit</code> query parameter:</p>
+        <pre>GET {{ BASE_URL }}/write/{{ write_uuid }}?bit=true</pre>
+        <p>This will update the value to <strong>true</strong>. Similarly, you can use <code>bit=false</code> to set it to <strong>false</strong>.</p>
 
-    <h3>Read Operation</h3>
-    <p>To read the current boolean value, visit the read UUID endpoint:</p>
-    <pre>GET {BASE_URL}/read/{read_uuid}</pre>
-    <p>The response will be a JSON object like this:</p>
-    <pre>{{ '{{' }} \"bit\": true {{ '}}' }}</pre>
+        <h3>Read Operation</h3>
+        <p>To read the current boolean value, visit the read UUID endpoint:</p>
+        <pre>GET {{ BASE_URL }}/read/{{ read_uuid }}</pre>
+        <p>The response will be a JSON object like this:</p>
+        <pre>{% raw %}{ "bit": true }{% endraw %}</pre>
 
-    <h3>Expiration</h3>
-    <p>UUID pairs automatically expire after {EXPIRATION_DAYS} days of inactivity. Each write refreshes the expiration timer.</p>
+        <h3>Expiration</h3>
+        <p>UUID pairs automatically expire after {{ EXPIRATION_DAYS }} days of inactivity. Each write refreshes the expiration timer.</p>
 
-    <h3>Error Handling</h3>
-    <p>If an invalid UUID is used, the system returns a 404 error with a JSON message:</p>
-    <pre>{{ '{{' }} \"error\": \"Invalid UUID\" {{ '}}' }}</pre>
+        <h3>Error Handling</h3>
+        <p>If an invalid UUID is used, the system returns a 404 error with a JSON message:</p>
+        <pre>{% raw %}{ "error": "Invalid UUID" }{% endraw %}</pre>
 
-    <h3>Example Usage with Curl</h3>
-    <p>Write (set to true):</p>
-    <pre>curl \"{BASE_URL}/write/{write_uuid}?bit=true\"</pre>
-    <p>Read current value:</p>
-    <pre>curl \"{BASE_URL}/read/{read_uuid}\"</pre>
+        <h3>Example Usage with Curl</h3>
+        <p>Write (set to true):</p>
+        <pre>curl "{{ BASE_URL }}/write/{{ write_uuid }}?bit=true"</pre>
+        <p>Read current value:</p>
+        <pre>curl "{{ BASE_URL }}/read/{{ read_uuid }}"</pre>
 
-    <h3>Database info</h3>
-    <p>Each UUID is random, so there is nothing tying them to anything meaningful. This lets us open the database. You can find the content of the database at the link below:</p>
-    <pre>{BASE_URL}/all</pre>
+        <h3>Database info</h3>
+        <p>Each UUID is random, so there is nothing tying them to anything meaningful. This lets us open the database. You can find the content of the database at the link below:</p>
+        <pre>{{ BASE_URL }}/all</pre>
 
-    <p><em>Refresh this page to generate new UUID pairs.</em></p>
-    """
+        <p><em>Refresh this page to generate new UUID pairs.</em></p>
+        """,
+        write_uuid=write_uuid,
+        read_uuid=read_uuid,
+        BASE_URL=BASE_URL,
+        EXPIRATION_DAYS=EXPIRATION_DAYS,
     )
 
 
