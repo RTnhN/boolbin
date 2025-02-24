@@ -64,8 +64,8 @@ def index():
     return render_template_string(
         """
         <h1>UUIDs Generated</h1>
-        <p><strong>Write/Read UUID:</strong> <a href="/{{ write_uuid }}">{{ write_uuid }}</a></p>
-        <p><strong>Read UUID:</strong> <a href="/{{ read_uuid }}">{{ read_uuid }}</a></p>
+        <p><strong>Write UUID:</strong> <a href="/write/{{ write_uuid }}">{{ write_uuid }}</a></p>
+        <p><strong>Read UUID:</strong> <a href="/read/{{ read_uuid }}">{{ read_uuid }}</a></p>
 
         <h2>How to Use This Database</h2>
         <p>This simple boolean database works with UUID-based endpoints for reading and writing values.</p>
