@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-EXPIRATION_DAYS = 30  # Change this value to adjust expiration time
+EXPIRATION_DAYS = 3  # Change this value to adjust expiration time
 EXPIRATION_SECONDS = EXPIRATION_DAYS * 24 * 60 * 60
 
 # Determine the base URL based on whether the script is running as the main module
