@@ -148,12 +148,12 @@ def write_bit(write_uuid):
             bit_value = 1 if bit.lower() == "true" else 0
             if gravity_time_param is not None:
                 try:
-                    gravity_minutes = int(gravity_time_param)
+                    gravity_seconds = int(gravity_time_param)
                 except ValueError:
                     return jsonify({"error": "Invalid gravity_time value"}), 400
-                if gravity_minutes > 0:
+                if gravity_seconds > 0:
                     gravity_enabled = 1
-                    gravity_expires_at = current_time + gravity_minutes * 60
+                    gravity_expires_at = current_time + gravity_seconds
                 else:
                     gravity_enabled = 0
                     gravity_expires_at = None
@@ -187,7 +187,7 @@ def write_bit(write_uuid):
                 "read_uuid": read_uuid,
             }
             if gravity_time_param is not None:
-                response["gravity"] = True if gravity_minutes > 0 else False
+                response["gravity"] = True if gravity_seconds > 0 else False
                 response["gravity_expires_at"] = gravity_expires_at
             return jsonify(response)
     return jsonify({"write_uuid": write_uuid, "read_uuid": read_uuid})
