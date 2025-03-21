@@ -46,24 +46,6 @@ def cleanup_expired():
         conn.commit()
 
 
-def gravity_monitor():
-    """Background thread that runs every 10 minutes and resets bits that have expired."""
-    while True:
-        current_time = int(time.time())
-        with sqlite3.connect("bool_db.db") as conn:
-            c = conn.cursor()
-            c.execute(
-                """
-                UPDATE bool_store 
-                SET bit = 0, gravity_enabled = 0, gravity_expires_at = NULL 
-                WHERE gravity_enabled = 1 AND gravity_expires_at IS NOT NULL AND ? >= gravity_expires_at
-            """,
-                (current_time,),
-            )
-            conn.commit()
-        time.sleep(10 * 60)  # Sleep for 10 minutes
-
-
 @app.route("/", methods=["GET"])
 def index():
     cleanup_expired()
@@ -255,7 +237,6 @@ def all_entries():
 
 
 init_db()
-threading.Thread(target=gravity_monitor, daemon=True).start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
